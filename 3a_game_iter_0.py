@@ -6,6 +6,8 @@ running = True
 player_x = 10
 player_y = 10
 
+
+
 x_min = 0
 x_max = 100
 y_min = 0
