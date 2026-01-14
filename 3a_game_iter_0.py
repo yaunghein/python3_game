@@ -13,7 +13,6 @@ y_max = 100
 
 kb_poller = KBPoller()
 
-
 def scan_keys():
     return kb_poller.pressed
 
