@@ -6,6 +6,10 @@ running = True
 player_x = 10
 player_y = 10
 
+npc_x = 50
+npc_y = 50
+npc_x_dir = 1
+npc_y_dir = 1
 
 
 x_min = 0
@@ -21,11 +25,13 @@ def scan_keys():
 
 
 def render_state():
-    print("player is at:", player_x, player_y)
+    # print("player is at:", player_x, player_y)
+    print("NPC is at:", npc_x, npc_y)
 
 
 def update_state(pressed_key):
     global player_x, player_y, running
+    global npc_x, npc_y, npc_x_dir, npc_y_dir
     if "a" in pressed_key:
         player_x -= 1
     if "d" in pressed_key:
@@ -45,6 +51,18 @@ def update_state(pressed_key):
         player_y = y_min
     if player_y > y_max:
         player_y = y_max
+
+    
+    if npc_x >= x_max or npc_x <= x_min:
+        npc_x_dir = -1 * npc_x_dir
+        
+    npc_x += 5 * npc_x_dir
+
+    if npc_y >= y_max or npc_y <= y_min:
+        npc_y_dir = -1 * npc_y_dir
+        
+    npc_y += 10 * npc_y_dir
+
 
 
 while running:
