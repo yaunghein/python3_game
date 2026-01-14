@@ -1,25 +1,17 @@
+# I added minimal properties to these class to start things running
+# Maybe we can refactor by moving character codes from GameEngine to here
+# Actually, you all can refactor all you want 😁
+# And let's discuss
+
 class Player:
-    def __init__(self, x_pos, y_pos):
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-    
-    def move(self, x_delta=0, y_delta=0):
-        self.x_pos += x_delta
-        self.y_pos += y_delta
-    
-    def set_pos(self, x, y):
-        self.x_pos = x
-        self.y_pos = y
-    
-    def get_pos(self):
-        return self.x_pos, self.y_pos
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
 
 class NPC:
-    def __init__(self, x_pos, y_pos, x_speed, y_speed):
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.x_speed = x_speed
-        self.y_speed = y_speed
-    
-    def update_pos(self):
-        pass
+    def __init__(self, x, y, x_dir, y_dir):
+        self.x = x
+        self.y = y
+        self.x_dir = x_dir
+        self.y_dir = y_dir
