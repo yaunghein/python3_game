@@ -17,6 +17,8 @@ x_max = 100
 y_min = 0
 y_max = 100
 
+# Player, NOC, GameEngine, GraphicsEngine
+
 kb_poller = KBPoller()
 
 def scan_keys():
@@ -51,7 +53,6 @@ def update_state(pressed_key):
     if player_y > y_max:
         player_y = y_max
 
-    
     if npc_x >= x_max or npc_x <= x_min:
         npc_x_dir = -1 * npc_x_dir
         
