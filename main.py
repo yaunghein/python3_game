@@ -1,5 +1,13 @@
+from engines.game import GameEngine
+from engines.graphics import GraphicsEngine
+
+
 def main():
-    print("Hello from python3-game!")
+    graphics = GraphicsEngine()
+    game = GameEngine(graphics)
+
+    print("Game Started. Press 'q' to quit.")
+    game.run()
 
 
 if __name__ == "__main__":
