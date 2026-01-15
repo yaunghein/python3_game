@@ -10,7 +10,7 @@ class GameEngine:
         self.running = True
 
         self.player = Player(10, 10, 'Circle', 'circle')
-        self.npc = NPC(50, 50, 'Square', 'square', 1, 1)
+        self.npc = NPC(50, 50, 'Square', 'square', 5, 10)
         self.x_max, self.y_max = 100, 100
 
     def run(self):
@@ -35,10 +35,34 @@ class GameEngine:
             self.player.y += 1
 
     def update_physics(self):
-        if self.npc.x >= self.x_max or self.npc.x <= 0:
-            self.npc.x_dir *= -1
-        self.npc.x += 5 * self.npc.x_dir
+        # for npc in self.npc:
+        self.npc.move()
+        self.validate_bound_bouncing(self.npc)
 
-        if self.npc.y >= self.y_max or self.npc.y <= 0:
-            self.npc.y_dir *= -1
-        self.npc.y += 10 * self.npc.y_dir
+        self.validate_bound_sticking(self.player)
+
+    def validate_bound_bouncing(self, npc: NPC):
+        if npc.x > self.x_max:
+            npc.x_speed = - npc.x_speed
+            npc.x = self.x_max - (npc.x - self.x_max)
+        elif npc.x < 0:
+            npc.x_speed = - npc.x_speed
+            npc.x = - npc.x
+
+        if npc.y > self.y_max:
+            npc.y_speed = - npc.y_speed
+            npc.y = self.y_max - (npc.y - self.y_max)
+        elif npc.y < 0:
+            npc.y_speed = - npc.x_speed
+            npc.y = - npc.y
+
+    def validate_bound_sticking(self, player: Player):
+        if player.x < 0:
+            player_x = 0
+        if player.x > self.x_max:
+            player_x = self.x_max
+
+        if player.y < 0:
+            player_y = 0
+        if player.y > self.y_max:
+            player_y = self.y_max
