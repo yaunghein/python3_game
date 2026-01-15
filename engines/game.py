@@ -9,8 +9,8 @@ class GameEngine:
         self.graphics = graphics_engine
         self.running = True
 
-        self.player = Player(10, 10)
-        self.npc = [NPC("NPC_1", 50, 50, 1, 1)]
+        self.player = Player(10, 10, 'Circle', 'circle')
+        self.npc = NPC(50, 50, 'Square', 'square', 5, 10)
         self.x_max, self.y_max = 100, 100
 
     def run(self):
@@ -18,7 +18,8 @@ class GameEngine:
             pressed_keys = self.kb.pressed
             self.handle_input(pressed_keys)
             self.update_physics()
-            self.graphics.render(self.player, self.npc[0])  # TODO: Allow multiple NPCs.
+            # self.graphics.render(self.player, self.npc)
+            self.graphics.render_state([self.player, self.npc])
             time.sleep(0.5)
 
     def handle_input(self, keys):
@@ -34,9 +35,9 @@ class GameEngine:
             self.player.y += 1
 
     def update_physics(self):
-        for npc in self.npc:
-            npc.move()
-            self.validate_bound_bouncing(npc)
+        # for npc in self.npc:
+        self.npc.move()
+        self.validate_bound_bouncing(self.npc)
 
         self.validate_bound_sticking(self.player)
 
@@ -47,14 +48,14 @@ class GameEngine:
         elif npc.x < 0:
             npc.x_speed = - npc.x_speed
             npc.x = - npc.x
-        
+
         if npc.y > self.y_max:
             npc.y_speed = - npc.y_speed
             npc.y = self.y_max - (npc.y - self.y_max)
         elif npc.y < 0:
             npc.y_speed = - npc.x_speed
             npc.y = - npc.y
-    
+
     def validate_bound_sticking(self, player: Player):
         if player.x < 0:
             player_x = 0

@@ -4,19 +4,19 @@
 # And let's discuss
 
 class Player:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    
-
-class NPC:
-    def __init__(self, name: str, x, y, x_speed, y_speed):
+    def __init__(self, x, y, name, shape):
         self.name = name
+        self.shape = shape
         self.x = x
         self.y = y
+
+
+class NPC(Player):
+    def __init__(self, x, y, name, shape, x_speed, y_speed):
+        super().__init__(x, y, name, shape)
         self.x_speed = x_speed
         self.y_speed = y_speed
-    
+
     def move(self):
         self.x += self.x_speed
         self.y += self.y_speed
