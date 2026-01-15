@@ -1,12 +1,16 @@
+import pygame
+
+
 class GraphicsEngine:
     def __init__(self):
-        pass
+        pygame.init()
+        self.screen = pygame.display.set_mode((1280, 720))
 
     def start_frame(self):
-        pass
+        self.screen.fill("purple")
 
     def show_frame(self):
-        pass
+        pygame.display.flip()
 
     def render_circle(self, x, y, radius, color):
-        print(f"{color} circle is at:", x, y)
+        pygame.draw.circle(self.screen, color, pygame.Vector2(x, y), radius)

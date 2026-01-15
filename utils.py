@@ -1,3 +1,6 @@
+import pygame
+
+
 class GameField:
     def __init__(self, x_min, y_min, x_max, y_max):
         self.x_min = x_min
@@ -8,11 +11,3 @@ class GameField:
     def clamp(self, x, y):
         return (max(self.x_min, min(self.x_max, x)), max(self.y_min, min(self.y_max, y)),
                 self.x_min > x or self.x_max < x, self.y_min > y or self.y_max < y)
-
-
-class InputController:
-    def __init__(self, kb_poller):
-        self.kb_poller = kb_poller
-
-    def get_pressed_keys(self):
-        return self.kb_poller.pressed

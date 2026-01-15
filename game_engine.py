@@ -1,8 +1,9 @@
 import time
+import pygame
 
 
 class GameEngine:
-    def __init__(self, graph_engine, input_controller, game_field, player, npc, *, fps=60):
+    def __init__(self, graph_engine, game_field, player, npc, *, fps=60):
 
         self.graph_engine = graph_engine
 
@@ -11,14 +12,12 @@ class GameEngine:
         self.npc = npc
         self.fps = fps
 
-        self.input_controller = input_controller
-
-    def update_state(self, pressed_keys):
+    def update_state(self, keys):
         self.npc.move(self.game_field)
-        self.player.move("a" in pressed_keys, "d" in pressed_keys,
-                         "w" in pressed_keys, "s" in pressed_keys, self.game_field)
+        self.player.move(keys[pygame.K_a], keys[pygame.K_d],
+                         keys[pygame.K_w], keys[pygame.K_s], self.game_field)
 
-        if "q" in pressed_keys:
+        if keys[pygame.K_q]:
             self.running = False
 
     def render_state(self):
@@ -30,12 +29,19 @@ class GameEngine:
 
         self.graph_engine.show_frame()
 
+    # def subscribe_events(self):
+
     def run_game(self):
         self.running = True
-        while self.running:
-            self.render_state()
 
-            pressed_keys = self.input_controller.get_pressed_keys()
-            self.update_state(pressed_keys)
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+
+            keys = pygame.key.get_pressed()
+            self.update_state(keys)
+            self.render_state()
+            pygame.display.flip()
 
             time.sleep(1 / self.fps)
