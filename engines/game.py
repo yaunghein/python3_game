@@ -9,8 +9,8 @@ class GameEngine:
         self.graphics = graphics_engine
         self.running = True
 
-        self.player = Player(10, 10)
-        self.npc = NPC(50, 50, 1, 1)
+        self.player = Player(10, 10, 'Circle', 'circle')
+        self.npc = NPC(50, 50, 'Square', 'square', 1, 1)
         self.x_max, self.y_max = 100, 100
 
     def run(self):
@@ -18,7 +18,8 @@ class GameEngine:
             pressed_keys = self.kb.pressed
             self.handle_input(pressed_keys)
             self.update_physics()
-            self.graphics.render(self.player, self.npc)
+            # self.graphics.render(self.player, self.npc)
+            self.graphics.render_state([self.player, self.npc])
             time.sleep(0.5)
 
     def handle_input(self, keys):

@@ -4,14 +4,15 @@
 # And let's discuss
 
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, x, y, name, shape):
+        self.name = name
+        self.shape = shape
         self.x = x
         self.y = y
 
 
-class NPC:
-    def __init__(self, x, y, x_dir, y_dir):
-        self.x = x
-        self.y = y
+class NPC(Player):
+    def __init__(self, x, y, name, shape, x_dir, y_dir):
+        super().__init__(x, y, name, shape)
         self.x_dir = x_dir
         self.y_dir = y_dir
