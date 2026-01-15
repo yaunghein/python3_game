@@ -1,6 +1,9 @@
 import time
+import math
 import pygame
+from pygame import Vector2
 
+from characters import Character
 
 class GameEngine:
     def __init__(self, graph_engine, game_field, player, npcs, *, fps=60):
@@ -13,20 +16,66 @@ class GameEngine:
         self.fps = fps
 
     def update_state(self, keys):
-        self.npc.move(self.game_field)
+        for i in len(self.npcs):
+            npc = self.npcs[i]
+            self.npc.move(self.game_field)
+
         self.player.move(keys[pygame.K_a], keys[pygame.K_d],
                          keys[pygame.K_w], keys[pygame.K_s], self.game_field)
         
-        for i in len(self.npcs):
-            npc = self.npcs[i]
-
-        
+        for i in range(len(self.npcs)):
+            self.handle_collision(self.player, self.npcs[i])
+            for j in range(i, len(self.npcs)):
+                self.handle_collision(self.npcs[i], self.npcs[j])
 
         if keys[pygame.K_q]:
             self.running = False
     
-    def handle_collision():
-        pass
+    def handle_collision(char_1: Character, char_2: Character, slop=0.01, percent=0.8):
+        delta = char_1.pos - char_2.pos
+        dist = delta.length()
+        sum_of_radii = char_1.radius + char_2.radius
+
+        if dist >= sum_of_radii:
+            return False  # no overlap 
+
+        if dist == 0:
+            collision_normal = Vector2(1, 0)  # avoid division by zero in the following
+        else:
+            collision_normal = delta / dist
+        
+        # --- 1) Position correction ("Baumgarte stabilization" preventing overlaps)
+        penetration = sum_of_radii - dist
+
+        inv_mass_1 = 0.0 if char_1.mass == 0 else 1.0 / char_1.mass
+        inv_mass_2 = 0.0 if char_2.mass == 0 else 1.0/ char_2.mass
+        inv_mass_sum = inv_mass_1 + inv_mass_2
+
+        if inv_mass_sum == 0.0:
+            return True  # both immovable but overlapping; nothing to do
+        
+        correction_mag = max(penetration - slop, 0.0) * percent / inv_mass_sum
+        correction = correction_mag * collision_normal
+
+        # TODO: Tune the number of iterations which may be too low.
+        char_1.pos += correction * inv_mass_1
+        char_2.pos -= correction * inv_mass_2
+
+        # --- 2) Velocity update according to conservation of momentum
+        vel_diff = char_1.vel - char_2.vel
+        normal_vel = vel_diff.dot(collision_normal)
+
+        # If characters are already separating no need for an update.
+        if normal_vel > 0:
+            return True
+        
+        e = 0.5  # coefficient of restitution
+        impulse_mag = - (1 + e) * normal_vel / inv_mass_sum
+        impulse = impulse_mag * collision_normal
+        char_1.vel += impulse * inv_mass_1
+        char_2.vel -= impulse * inv_mass_2
+
+        return True
 
     def render_state(self):
         self.graph_engine.start_frame()
