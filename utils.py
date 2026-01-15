@@ -9,5 +9,12 @@ class GameField:
         self.y_max = y_max
 
     def clamp(self, x, y):
-        return (max(self.x_min, min(self.x_max, x)), max(self.y_min, min(self.y_max, y)),
-                self.x_min > x or self.x_max < x, self.y_min > y or self.y_max < y)
+        x_clamped = max(self.x_min, min(self.x_max, x))
+        y_clamped = max(self.y_min, min(self.y_max, y))
+        return (x_clamped, y_clamped, x != x_clamped, y != y_clamped)
+
+
+class InputController:
+    def get_pressed_keys(self):
+        pygame.event.pump()
+        return pygame.key.get_pressed()
