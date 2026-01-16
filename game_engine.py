@@ -1,8 +1,8 @@
 import pygame
 import sys
-import math
 import random
 from npc import NPC
+from bullet import Bullet
 
 
 class GameEngine:
@@ -15,6 +15,7 @@ class GameEngine:
         self.fps = fps
         self.running = False
         self.game_over = False
+        self.bullets = []
 
     def reset_game(self):
         self.player.reset()
@@ -34,7 +35,8 @@ class GameEngine:
             if event.type == pygame.MOUSEBUTTONDOWN and not self.game_over:
                 mx, my = pygame.mouse.get_pos()
                 for _ in range(5):
-                    ntype = "bad" if random.random() < 0.3 else "good"
+                    ntype = "good"
+                    # ntype = "bad" if random.random() < 0.3 else "good"
                     self.npcs.append(NPC(mx, my, random.choice(
                         [-4, 4]), random.choice([-4, 4]), npc_type=ntype))
 
@@ -61,13 +63,40 @@ class GameEngine:
                     else:
                         self.npcs.remove(npc)
 
+            if keys[pygame.K_z]:
+                self.player.rotate(5)
+
+            if keys[pygame.K_SPACE]:
+                # if len(self.bullets) < 10:
+                new_bullet = Bullet(
+                    self.player.x, self.player.y, self.player.angle)
+                self.bullets.append(new_bullet)
+
+            for bullet in self.bullets[:]:
+                bullet.move()
+                if bullet.is_off_screen(self.graph_engine.width, self.graph_engine.height):
+                    self.bullets.remove(bullet)
+                    continue
+
+                b_left, b_right = bullet.x - bullet.radius, bullet.x + bullet.radius
+                b_top, b_bottom = bullet.y - bullet.radius, bullet.y + bullet.radius
+                for npc in self.npcs[:]:
+                    n_left, n_right = npc.x - npc.radius, npc.x + npc.radius
+                    n_top, n_bottom = npc.y - npc.radius, npc.y + npc.radius
+                    if b_right > n_left and b_left < n_right and b_bottom > n_top and b_top < n_bottom:
+                        if npc in self.npcs:
+                            self.npcs.remove(npc)
+                        if bullet in self.bullets:
+                            self.bullets.remove(bullet)
+                        break
+
             if keys[pygame.K_q] or keys[pygame.K_ESCAPE]:
                 self.running = False
 
     def render_state(self):
         self.graph_engine.start_frame()
         self.graph_engine.render_circle(
-            self.player.x, self.player.y, self.player.radius, "red")
+            self.player.x, self.player.y, self.player.radius, "red", self.player.angle)
 
         for npc in self.npcs:
             if npc.shape == "square":
@@ -76,6 +105,10 @@ class GameEngine:
             else:
                 self.graph_engine.render_circle(
                     npc.x, npc.y, npc.radius, npc.color)
+
+        for bullet in self.bullets:
+            self.graph_engine.render_circle(
+                bullet.x, bullet.y, bullet.radius, "red")
 
         if self.game_over:
             self.graph_engine.render_text("GAME OVER")

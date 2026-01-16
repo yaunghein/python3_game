@@ -11,12 +11,14 @@ if __name__ == "__main__":
     field = GameField(20, 20, WIDTH - 20, HEIGHT - 20)
     hero = Player(WIDTH // 2, HEIGHT // 2, speed=6)
 
-    init_npcs = [
-        NPC(random.randint(100, 700), random.randint(100, 500),
-            random.randint(-4, 4) or 2, random.randint(-4, 4) or 2,
-            npc_type="bad" if i < 1 else "good")
-        for i in range(5)
-    ]
+    init_npcs = [NPC(random.randint(100, 700), random.randint(
+        100, 500), random.randint(-4, 4) or 2, random.randint(-4, 4) or 2, npc_type="good")]
+    # init_npcs = [
+    #     NPC(random.randint(100, 700), random.randint(100, 500),
+    #         random.randint(-4, 4) or 2, random.randint(-4, 4) or 2,
+    #         npc_type="bad" if i < 1 else "good")
+    #     for i in range(1)
+    # ]
 
     graphics = GraphicsEngine(WIDTH, HEIGHT)
     inputs = InputController()

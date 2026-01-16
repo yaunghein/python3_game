@@ -1,4 +1,5 @@
 import pygame
+import math
 
 
 class GraphicsEngine:
@@ -15,9 +16,15 @@ class GraphicsEngine:
     def start_frame(self):
         self.screen.fill((20, 20, 20))
 
-    def render_circle(self, x, y, radius, color):
+    def render_circle(self, x, y, radius, color, angle=None):
         pygame.draw.circle(self.screen, pygame.Color(
             color), (int(x), int(y)), radius)
+
+        if angle is not None:
+            rad = math.radians(angle)
+            end_x = x + radius * math.cos(rad)
+            end_y = y + radius * math.sin(rad)
+            pygame.draw.line(self.screen, "black", (x, y), (end_x, end_y), 3)
 
     def render_square(self, x, y, size, color):
         rect = pygame.Rect(int(x - size), int(y - size), size * 2, size * 2)

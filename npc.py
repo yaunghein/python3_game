@@ -7,7 +7,6 @@ class NPC:
         self.radius = radius
         self.npc_type = npc_type  # "good" or "bad"
 
-        # Set static properties based on type
         if self.npc_type == "bad":
             self.shape = "square"
             self.color = "purple"
