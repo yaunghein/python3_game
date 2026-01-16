@@ -12,27 +12,27 @@ class Character:
 class Player(Character):
     def __init__(self, x, y, speed_x=1, speed_y=1, radius=8):
         super().__init__(x, y, speed_x, speed_y, radius)
+        self.mass = 0  # the player is immovable except via keyboard input
 
-    def move(self, left, right, up, down, game_field):
+    def move(self, left, right, up, down):
         self.pos.x += self.vel.x * right - self.vel.x * left
         self.pos.y += self.vel.y * down - self.vel.y * up
 
-        # TODO: Change GameField
-        self.pos, _, _ = game_field.clamp(self.pos)
+        # self.pos, _, _ = game_field.clamp(self.pos)
 
 
 class NPC(Character):
     def __init__(self, x, y, speed_x=1, speed_y=1, radius=8):
         super().__init__(x, y, speed_x, speed_y, radius)
 
-    def move(self, game_field):
+    def move(self):
         self.pos += self.vel
 
         # Move this to game engine
-        self.pos, x_edge, y_edge = game_field.clamp(self.pos)
+        # self.pos, x_edge, y_edge = game_field.clamp(self.pos)
 
-        if x_edge:
-            self.vel.x = -self.vel.x
+        # if x_edge:
+        #     self.vel.x = -self.vel.x
 
-        if y_edge:
-            self.vel.y = -self.vel.y
+        # if y_edge:
+        #     self.vel.y = -self.vel.y
