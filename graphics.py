@@ -1,4 +1,5 @@
 import pygame
+from pygame import Vector2
 
 
 class GraphicsEngine:
@@ -12,5 +13,5 @@ class GraphicsEngine:
     def show_frame(self):
         pygame.display.flip()
 
-    def render_circle(self, x, y, radius, color):
-        pygame.draw.circle(self.screen, color, pygame.Vector2(x, y), radius)
+    def render_circle(self, origin: Vector2, radius, color):
+        pygame.draw.circle(self.screen, color, origin, radius)
