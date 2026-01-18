@@ -1,20 +1,18 @@
 from utils import GameField
 from game_engine import GameEngine
 from graphics import GraphicsEngine
-from characters import Player, NPC
-
+from characters import Player
 
 if __name__ == "__main__":
-    game_field = GameField(0, 0, 1280, 720)
-    player = Player(640, 360, speed_x=5, speed_y=5, radius=20)
-    npcs = [NPC(200, 200, 5, 5, radius=20)]
+    game_field = GameField(0, 0, 500, 500)
+    # Each client creates their local player object
+    player = Player(250, 250, speed_x=7, speed_y=7, radius=20)
 
     game_engine = GameEngine(
         GraphicsEngine(),
-        # InputController(),
         game_field,
         player,
-        npcs,
-        fps=15
+        [],  # NPCs list is now managed by server
+        fps=60
     )
     game_engine.run_game()
