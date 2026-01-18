@@ -1,8 +1,9 @@
 from pygame import Vector2
 import math
 
+
 class Character:
-    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8):
+    def __init__(self, x, y, speed_x=1, speed_y=5, radius=20):
         self.pos = Vector2(x, y)
         self.vel = Vector2(speed_x, speed_y)
         self.radius = radius

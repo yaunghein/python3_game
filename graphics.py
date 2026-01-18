@@ -5,7 +5,7 @@ from pygame import Vector2
 class GraphicsEngine:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1280, 720))
+        self.screen = pygame.display.set_mode((500, 500))
 
     def start_frame(self):
         self.screen.fill("purple")
