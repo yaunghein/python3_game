@@ -5,9 +5,9 @@ from characters import Player, NPC
 
 
 if __name__ == "__main__":
-    game_field = GameField(0, 0, 100, 100)
-    player = Player(50, 50)
-    npcs = [NPC(70, 70, 2, 1)]
+    game_field = GameField(0, 0, 1280, 720)
+    player = Player(640, 360, speed_x=5, speed_y=5, radius=20)
+    npcs = [NPC(200, 200, 5, 5, radius=20)]
 
     game_engine = GameEngine(
         GraphicsEngine(),
