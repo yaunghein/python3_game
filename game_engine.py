@@ -1,10 +1,9 @@
-import time
-import math
 import pygame
 from pygame import Vector2
+import random
 
 from characters import Character
-from utils import GameField
+from characters import NPC
 
 
 class GameEngine:
@@ -17,31 +16,41 @@ class GameEngine:
         self.clock = pygame.time.Clock()
 
     def update_state(self, keys):
-        for i in range(len(self.npcs)):
-            self.npcs[i].move()
+        for npc in self.npcs:
+            npc.move()
 
         self.player.move(keys[pygame.K_a], keys[pygame.K_d],
                          keys[pygame.K_w], keys[pygame.K_s])
 
-        bottom_left = Vector2(self.game_field.x_min, self.game_field.y_min)
-        bottom_right = Vector2(self.game_field.x_max, self.game_field.y_min)
-        top_right = Vector2(self.game_field.x_max, self.game_field.y_max)
-        top_left = Vector2(self.game_field.x_min, self.game_field.y_max)
+        walls = [
+            (Vector2(self.game_field.x_min, self.game_field.y_min),
+             Vector2(self.game_field.x_max, self.game_field.y_min)),
+            (Vector2(self.game_field.x_max, self.game_field.y_min),
+             Vector2(self.game_field.x_max, self.game_field.y_max)),
+            (Vector2(self.game_field.x_max, self.game_field.y_max),
+             Vector2(self.game_field.x_min, self.game_field.y_max)),
+            (Vector2(self.game_field.x_min, self.game_field.y_max),
+             Vector2(self.game_field.x_min, self.game_field.y_min))
+        ]
 
-        walls = [(bottom_left, bottom_right), (bottom_right, top_right),
-                 (top_right, top_left), (top_left, bottom_left)]
+        npcs_to_remove = set()
 
         ITER = 10
         for _ in range(ITER):
             for i in range(len(self.npcs)):
-                self.handle_collision(self.player, self.npcs[i])
-                for j in range(i, len(self.npcs)):
+                delta = self.player.pos - self.npcs[i].pos
+                if delta.length() < (self.player.radius + self.npcs[i].radius):
+                    npcs_to_remove.add(self.npcs[i])
+
+                for j in range(i + 1, len(self.npcs)):
                     self.handle_collision(self.npcs[i], self.npcs[j])
 
             for wall_a, wall_b in walls:
                 self.handle_wall_collision(self.player, wall_a, wall_b)
-                for i in range(len(self.npcs)):
-                    self.handle_wall_collision(self.npcs[i], wall_a, wall_b)
+                for npc in self.npcs:
+                    self.handle_wall_collision(npc, wall_a, wall_b)
+
+        self.npcs = [npc for npc in self.npcs if npc not in npcs_to_remove]
 
         if keys[pygame.K_q]:
             self.running = False
@@ -144,20 +153,22 @@ class GameEngine:
 
         self.graph_engine.show_frame()
 
-    # def subscribe_events(self):
-
     def run_game(self):
         self.running = True
-
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
 
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mx, my = pygame.mouse.get_pos()
+                    from characters import NPC
+                    for _ in range(5):
+                        vx = random.uniform(5, 15)
+                        vy = random.uniform(5, 15)
+                        self.npcs.append(NPC(mx, my, vx, vy, radius=20))
+
             keys = pygame.key.get_pressed()
             self.update_state(keys)
             self.render_state()
-            pygame.display.flip()
-
-            # time.sleep(1 / self.fps)
             self.clock.tick(self.fps)
