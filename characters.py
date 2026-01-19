@@ -37,3 +37,12 @@ class NPC(Character):
 
         # if y_edge:
         #     self.vel.y = -self.vel.y
+
+class Bullet:
+    def __init__(self, pos, direction, speed=10):
+        self.pos = Vector2(pos.x, pos.y)
+        self.vel = direction.normalize() * speed
+        self.radius = 4
+
+    def move(self):
+        self.pos += self.vel

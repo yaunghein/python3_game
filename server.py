@@ -11,7 +11,8 @@ PORT = 5555
 # Global Game State
 game_state = {
     "players": {},  # id: {"pos": [x, y], "radius": r}
-    "npcs": []      # [{"pos": Vector2, "vel": Vector2, "radius": r}, ...]
+    "npcs": [],      # [{"pos": Vector2, "vel": Vector2, "radius": r}, ...]
+    "bullets": []
 }
 
 
@@ -35,6 +36,32 @@ def update_physics():
                 n for n in game_state["npcs"]
                 if (p_pos - n["pos"]).length() > (p["radius"] + n["radius"])
             ]
+
+        # ---move bullet---
+        for bullet in game_state["bullets"]:
+            bullet["pos"] += bullet["vel"]
+
+        # --- Remove bullets outside field ---
+        game_state["bullets"] = [
+            b for b in game_state["bullets"]
+            if 0 <= b["pos"].x <= 500 and 0 <= b["pos"].y <= 500
+            ]
+
+        # --- Bullet vs NPC collision ---
+        new_npcs = []
+
+        for npc in game_state["npcs"]:
+            hit = False
+            for bullet in list(game_state["bullets"]):  # list() is IMPORTANT
+                if (bullet["pos"] - npc["pos"]).length() <= bullet["radius"] + npc["radius"]:
+                    hit = True
+                    game_state["bullets"].remove(bullet)
+                    break
+
+            if not hit:
+                new_npcs.append(npc)
+
+        game_state["npcs"] = new_npcs
 
         time.sleep(1/60)
 
@@ -62,6 +89,15 @@ def handle_client(conn, player_id):
                         "radius": 20
                     })
 
+            # ---fire bullet---
+            if data["fire"]:
+                dx, dy = data["fire"]
+                game_state["bullets"].append({
+                    "pos": Vector2(data["pos"][0], data["pos"][1]),
+                    "vel": Vector2(dx, dy).normalize() * 10,
+                    "radius": 5
+                })
+                
             conn.sendall(pickle.dumps(game_state))
         except:
             break
