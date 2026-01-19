@@ -1,6 +1,7 @@
 from pygame import Vector2
 import math
 
+
 class Character:
     def __init__(self, x, y, speed_x=1, speed_y=1, radius=8, color="blue"):
         self.pos = Vector2(x, y)
@@ -39,3 +40,12 @@ class NPC(Character):
 
         # if y_edge:
         #     self.vel.y = -self.vel.y
+
+class Bullet:
+    def __init__(self, pos, direction, speed=10):
+        self.pos = Vector2(pos.x, pos.y)
+        self.vel = direction.normalize() * speed
+        self.radius = 4
+
+    def move(self):
+        self.pos += self.vel
