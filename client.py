@@ -23,7 +23,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     clock = pygame.time.Clock()
 
     while running:
-        actions = PlayerActions()
+        actions = PlayerActions(this_player_id)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

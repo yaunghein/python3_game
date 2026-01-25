@@ -16,6 +16,8 @@ game_state = {
 }
 
 
+
+
 def update_physics():
     while True:
         for npc in game_state["npcs"]:

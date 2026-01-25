@@ -3,16 +3,15 @@ import math
 
 
 class Character:
-    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8, color="blue"):
+    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8):
         self.pos = Vector2(x, y)
         self.vel = Vector2(speed_x, speed_y)
         self.radius = radius
         self.mass = math.pi * (self.radius ** 2)
-        self.color = color
 
 
 class Player(Character):
-    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8, angle=0, color="red"):
+    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8, angle=0):
         super().__init__(x, y, speed_x, speed_y, radius)
         self.mass = 0  # the player is immovable except via keyboard input
         self.angle = 0
@@ -21,25 +20,28 @@ class Player(Character):
         self.pos.x += self.vel.x * right - self.vel.x * left
         self.pos.y += self.vel.y * down - self.vel.y * up
 
-        # self.pos, _, _ = game_field.clamp(self.pos)
-    
+    # TODO: Change this to accept scroll wheel instead
+    def rotate(self, left, right, up, down):
+        if right:
+            if up:
+                self.angle = 45
+            elif down:
+                self.angle = 315
+        elif left:
+            if up:
+                self.angle = 135
+            elif down:
+                self.angle = 225
+
 
 
 class NPC(Character):
-    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8, color="blue"):
-        super().__init__(x, y, speed_x, speed_y, radius, color)
+    def __init__(self, x, y, speed_x=1, speed_y=1, radius=8):
+        super().__init__(x, y, speed_x, speed_y, radius)
 
     def move(self):
         self.pos += self.vel
 
-        # Move this to game engine
-        # self.pos, x_edge, y_edge = game_field.clamp(self.pos)
-
-        # if x_edge:
-        #     self.vel.x = -self.vel.x
-
-        # if y_edge:
-        #     self.vel.y = -self.vel.y
 
 class Bullet:
     def __init__(self, pos, direction, speed=10):
