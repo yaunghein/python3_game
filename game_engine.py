@@ -1,5 +1,4 @@
 import pygame
-from characters import Bullet
 from network import Network
 from pygame import Vector2
 
@@ -26,85 +25,66 @@ class GameEngine:
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     click_to_send = pygame.mouse.get_pos()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        direction = self.player.vel
-                        if direction.length() == 0:
-                            direction = Vector2(1, 0)  # default direction
-                        
-                        fire_direction = [direction.x, direction.y]
 
             keys = pygame.key.get_pressed()
-            self.player.move(keys[pygame.K_a], keys[pygame.K_d],
-                             keys[pygame.K_w], keys[pygame.K_s])
-            
-            # ---update orientation---
-            direction = Vector2(0, 0)
 
+            move_dir = Vector2(0, 0)
             if keys[pygame.K_a]:
-                direction.x = -1
+                move_dir.x = -1
             if keys[pygame.K_d]:
-                direction.x = 1
+                move_dir.x = 1
             if keys[pygame.K_w]:
-                direction.y = -1
+                move_dir.y = -1
             if keys[pygame.K_s]:
-                direction.y = 1
+                move_dir.y = 1
 
-            if direction.length() > 0:
-                direction = direction.normalize()
-                self.player.vel = direction
+            if move_dir.length() > 0:
+                move_dir = move_dir.normalize()
+                self.player.pos += move_dir * 7
 
-                speed = 7
-                self.player.pos += direction * speed
+            if keys[pygame.K_z]:
+                self.player.angle = (self.player.angle + 5) % 360
 
-            # --- Clamp player inside game field ---
-            self.player.pos.x = max(self.game_field.x_min, min(self.game_field.x_max, self.player.pos.x))
-            self.player.pos.y = max(self.game_field.y_min, min(self.game_field.y_max, self.player.pos.y))
+            if keys[pygame.K_SPACE]:
+                bullet_vec = Vector2(1, 0).rotate(self.player.angle)
+                fire_direction = [bullet_vec.x, bullet_vec.y]
 
-            # send local data, get global state
+            self.player.pos.x = max(self.game_field.x_min, min(
+                self.game_field.x_max, self.player.pos.x))
+            self.player.pos.y = max(self.game_field.y_min, min(
+                self.game_field.y_max, self.player.pos.y))
+
             payload = {
                 "pos": [self.player.pos.x, self.player.pos.y],
+                "angle": self.player.angle,
                 "radius": self.player.radius,
                 "spawn": click_to_send,
-                "fire": fire_direction }
+                "fire": fire_direction
+            }
             world_state = self.net.send(payload)
-            click_to_send = None  # reset after sending
+            click_to_send = None
 
             if world_state:
                 self.graph_engine.start_frame()
 
-                # draw all players
                 for p_id, p_data in world_state["players"].items():
                     color = "red" if p_id == self.net.p_id else "white"
+                    p_pos = Vector2(p_data["pos"][0], p_data["pos"][1])
                     self.graph_engine.render_circle(
-                        Vector2(p_data["pos"][0], p_data["pos"][1]), p_data["radius"], color)
-                    
-                # --- draw player orientation ---
-                start = Vector2(p_data["pos"][0], p_data["pos"][1])
-                direction = self.player.vel
+                        p_pos, p_data["radius"], color)
 
-                if direction.length() > 0:
-                    end = start + direction.normalize() * 30
-                    pygame.draw.line(
-                        self.graph_engine.screen,
-                        "yellow",
-                        start,
-                        end,
-                        3
-                    )
+                    p_angle = p_data.get("angle", 0)
+                    look_vec = Vector2(1, 0).rotate(p_angle) * 30
+                    pygame.draw.line(self.graph_engine.screen,
+                                     "yellow", p_pos, p_pos + look_vec, 3)
 
-                # draw all NPCs
                 for npc in world_state["npcs"]:
                     self.graph_engine.render_circle(
                         npc["pos"], npc["radius"], "blue")
 
-                # --- Draw bullets ---
                 for bullet in world_state["bullets"]:
                     self.graph_engine.render_circle(
-                        bullet["pos"],
-                        bullet["radius"],
-                        "yellow"
-                    )
+                        bullet["pos"], bullet["radius"], "yellow")
 
                 self.graph_engine.show_frame()
 
